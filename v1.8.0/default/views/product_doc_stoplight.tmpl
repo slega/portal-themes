@@ -1,0 +1,17 @@
+{{ $oasfile := gt (.OASDocument.Url | trim | length) 0 }}
+{{ $oasurl := gt (.OASUrl | trim | length) 0 }}
+{{$url := ""}}
+{{if $oasfile }}
+  {{$url = .OASDocument.URL}}
+{{else}}
+  {{$url = .OASUrl}}
+{{end}}
+<div class="docs-container">
+  <div>
+    <elements-api 
+        apiDescriptionUrl='{{$url}}'
+        router="hash"
+        layout="sidebar"
+    />
+  </div>
+</div>
