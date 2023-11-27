@@ -9,11 +9,6 @@
             "layout": "portal_layout"
         },
         {
-            "name": "Portal Home",
-            "template": "portal_home",
-            "layout": "portal_layout"
-        },
-        {
             "name": "Home",
             "template": "home",
             "layout": "portal_layout"

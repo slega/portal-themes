@@ -4,6 +4,8 @@
 {{ $errPassword1 := "" }}
 {{ $errPassword2 := "" }}
 {{ $genericError := "" }}
+{{ $customAttrs := .customAttributes }}
+{{ $data := . }}
 
 {{ if .errors }}
   {{ range $field, $errs := .errors }}
@@ -68,19 +70,19 @@
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input type="password" name="password1" class="form-control content-field {{if ne $errPassword1 "" }}has-error{{end}}" placeholder="Your Password *" value="" />
+          <input type="password" name="password1" class="form-control content-field {{if ne $errPassword1 "" }}has-error{{end}}" placeholder="Your Password *" value="{{ .password1 }}" autocomplete="off" />
           {{if ne $errPassword1 "" }}
             <p class="invalid-feedback d-block">{{ $errPassword1 }}</p>
           {{end}}
         </div>
         <div class="form-group">
           <label class="form-label">Re-enter password</label>
-          <input type="password" name="password2" class="form-control content-field {{if ne $errPassword2 "" }}has-error{{end}}" placeholder="Confirm Password *" value="" />
+          <input type="password" name="password2" class="form-control content-field {{if ne $errPassword2 "" }}has-error{{end}}" placeholder="Confirm Password *" value="{{ .password2 }}" autocomplete="off" />
           {{if ne $errPassword2 "" }}
             <p class="invalid-feedback d-block">{{ $errPassword2 }}</p>
           {{end}}
         </div>
-        <div class="form-group">
+        <div class="form-group mb-4">
           <label class="form-label"> Invite code
             <span class="help-icon" data-toggle="tooltip" data-placement="right" title="When registering with an invite code you'd be assigned to a specific team and org within this developer portal.">
               <img src="../../assets/images/help.svg" >
@@ -88,7 +90,52 @@
           </label>
           <input type="text" name="invite_id" class="form-control" placeholder="Invite code" value="{{ .invite_id }}" {{ if .invite_id }} style="pointer-events: none;" {{ end }} />
         </div>
-        <div class="form-group text-center">
+        {{if $customAttrs}}
+          {{ range $attr := $customAttrs }}
+            {{if eq .Behaviour 3}}
+              <input type="hidden" name="{{.Identifier}}" value=""/>
+            {{else}}
+              <div class="d-flex flex-column">
+                <label class="form-label">{{.Name}} {{if .Required}}(Required){{else}}(Optional){{end}}</label>
+                {{ if eq .Type 3}}
+                  <div class="d-flex flex-row">
+                    {{if eq .Behaviour 1}}
+                      <input class="align-self-start mt-1" type="checkbox" name="{{.Identifier}}" {{if (index $data .Identifier)}}checked{{end}} value="true"/>
+                      <label class="ml-2">{{safe .Description}}</label>
+                    {{else}}
+                      <label>{{safe .Description}}</label>
+                    {{end}}
+                  </div>
+                {{end}}
+                {{if or (eq .Type 1) (eq .Type 4)}}
+                  {{if eq .Behaviour 1}}
+                    <input class="form-control" type="text" name="{{.Identifier}}" value="{{ index $data .Identifier }}"/>
+                    <small class="form-text text-muted ml-2">{{safe .Description}}</small>
+                  {{else}}
+                    <label>{{safe .Description}}</label>
+                  {{end}}
+                {{end}}
+                {{if eq .Type 2}}
+                  {{if eq .Behaviour 1}}
+                    <select name="{{.Identifier}}">
+                    <option value="" disabled selected>Select one {{.Name}}</option>
+                    {{ $selected := (index $data .Identifier)}}
+                    {{range $value := $attr.GetDropDownValues}}
+                      {{if not (eq $value "")}}
+                      <option value="{{$value}}" {{if eq $selected $value}}selected{{end}}>{{$value}}</option>
+                      {{end}}
+                    {{end}}
+                    </select>
+                    <small class="form-text text-muted ml-2">{{safe .Description}}</small>
+                  {{else}}
+                    <label>{{safe .Description}}</label>
+                  {{end}}
+                {{end}}
+              </div>
+            {{end}}
+          {{end}}
+        {{end}}
+        <div class="form-group text-center mt-4">
           <input type="submit" name="submit" class="btn btn-primary" value="Register to developer portal" />
         </div>
         <div class="form-group text-center">

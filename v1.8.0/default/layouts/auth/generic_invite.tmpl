@@ -69,14 +69,14 @@
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input type="password" name="password1" class="form-control content-field {{if ne $errPassword1 "" }}has-error{{end}}" placeholder="Your Password *" value="" />
+          <input type="password" name="password1" class="form-control content-field {{if ne $errPassword1 "" }}has-error{{end}}" placeholder="Your Password *" value="" autocomplete="off" />
           {{if ne $errPassword1 "" }}
             <p class="invalid-feedback d-block">{{ $errPassword1 }}</p>
           {{end}}
         </div>
         <div class="form-group">
           <label class="form-label">Re-enter password</label>
-          <input type="password" name="password2" class="form-control content-field {{if ne $errPassword2 "" }}has-error{{end}}" placeholder="Confirm Password *" value="" />
+          <input type="password" name="password2" class="form-control content-field {{if ne $errPassword2 "" }}has-error{{end}}" placeholder="Confirm Password *" value="" autocomplete="off" />
           {{if ne $errPassword2 "" }}
             <p class="invalid-feedback d-block">{{ $errPassword2 }}</p>
           {{end}}
