@@ -4,6 +4,9 @@
 {{ $allCatalogues := .catalogues }}
 {{ $cataloguesLength := len $allCatalogues}}
 {{ $hasDocs := false }}
+{{ $initialAPI := index $thisProduct.APIDetails 0}}
+{{ $initialAPIOasUrl := ""}}
+{{ $initialAPIID := ""}}
 {{ range $thisProduct.APIDetails }}
 	{{ $oasfile := gt (.OASDocument.Base.Url | trim | length) 0 }}
 	{{ $oasurl := gt (.OASUrl | trim | length) 0 }}
@@ -286,58 +289,38 @@
 		<div class="container api-product-page_spec">
 		    <p>Select an API</p>
 		    <div class="d-flex flex-row justify-content-between align-items-center mt-1 mb-5 pb-3">
-			<select id="OasApiSelect">
-			    {{$oas_template := ProductDocRenderer}}
-			    {{ range $index, $api_detail := $thisProduct.APIDetails }} 
-			    {{ $oasfile := gt ($api_detail.OASDocument.Base.Url | trim | length) 0 }}
-			    {{ $oasurl := gt ($api_detail.OASUrl | trim | length) 0 }}
-			    {{ if or $oasfile $oasurl }}
-			    {{if eq $oas_template $redoc}}
-			    {{$url := ""}}
-			    {{if $oasfile }}
-			    {{$url = .OASDocument.Base.Url}}
-			    {{else}}
-			    {{$url = .OASUrl}}
-			    {{end}}
-			    <option value="{{$url}}">{{$api_detail.Name}}</option>
-			    <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
-			    {{else}}
-			    <option value="oas-option-{{$index}}">{{$api_detail.Name}}</option>
-			    {{end}}
-			    {{end}}
-			    {{end}}
-			</select>
-			{{ range $index, $api_detail := $thisProduct.APIDetails }}
-			{{ $oasfile := gt ($api_detail.OASDocument.Base.Url | trim | length) 0 }}
-			{{ $oasurl := gt ($api_detail.OASUrl | trim | length) 0 }}
-			{{ if or $oasfile $oasurl }} 
-			{{$url := ""}}
-			{{if $oasfile }}
-			{{$url = .OASDocument.Base.Url}}
-			{{else}}
-			{{$url = .OASUrl}}
-			{{end}}
-			<div class="oas-display-content-download-button d-none" id="{{if eq $oas_template $redoc}}display-download-button-{{$url}}{{else}}display-download-button-oas-option-{{$index}}{{end}}">
-			    <form method="get" action="/portal/catalogue-products/{{$thisProduct.Path}}/{{.APIID}}/docs">
-				<button class="download-oas-button" type="submit">DOWNLOAD OAS SPEC</button>
-			    </form>
-			</div>
-			{{end}}
-			{{end}}
+				{{$oas_template := ProductDocRenderer}}
+				<select data-template="{{$oas_template}}" id="OasApiSelect">
+					{{ range $index, $api_detail := $thisProduct.APIDetails }} 
+						{{ $oasfile := gt ($api_detail.OASDocument.Base.Url | trim | length) 0 }}
+						{{ $oasurl := gt ($api_detail.OASUrl | trim | length) 0 }}
+						{{ if or $oasfile $oasurl }}
+							{{$url := ""}}
+							{{if $oasfile }}
+								{{$url = .OASDocument.Base.Url}}
+							{{else}}
+								{{$url = .OASUrl}}
+							{{end}}
+							<option value="{{$api_detail.APIID}}-{{$url}}">{{$api_detail.Name}}</option>
+							{{if eq $initialAPIOasUrl ""}}{{ $initialAPIOasUrl = $url }}{{end}}
+							{{if eq $initialAPIID ""}}{{ $initialAPIID = $api_detail.APIID }}{{end}}
+						{{end}}
+					{{end}}
+				</select>
+				<div class="oas-display-content-download-button">
+					<form name="oas_form" method="get" data-path="/portal/catalogue-products/{{$thisProduct.Path}}" id="display-download-button" action="/portal/catalogue-products/{{$thisProduct.Path}}/{{$initialAPIID}}/docs/download">
+					<button class="download-oas-button" type="submit">DOWNLOAD OAS SPEC</button>
+					</form>
+				</div>
 		    </div>
 		</div>
 		{{if eq $oas_template $redoc}}
-		<redoc hide-download-button></redoc>
+			<redoc hide-download-button></redoc>
+			<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
 		{{else}}
-		{{ range $index, $api_detail := $thisProduct.APIDetails }}
-		{{ $oasfile := gt ($api_detail.OASDocument.Base.Url | trim | length) 0 }}
-		{{ $oasurl := gt ($api_detail.OASUrl | trim | length) 0 }}
-		{{ if or $oasfile $oasurl }} 
-		<div class="oas-display-content d-none" id="display-oas-option-{{$index}}">
-                    {{render $oas_template $api_detail}}
+		<div id="oas-display-stoplight">
+			<elements-api apiDescriptionUrl="{{$initialAPIOasUrl}}" router="hash" layout="sidebar" hideExport="true"/>
 		</div>
-		{{end}}
-		{{end}}
 		{{end}}
 		{{else}}
 		<div class="container">

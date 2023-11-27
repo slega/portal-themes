@@ -1,5 +1,5 @@
 import { SortBy } from './components/sorting.js';
-import { Interactive, InteractiveSelect, SetMarkdownContent } from './components/interactive.js';
+import { Interactive, HandleApiSpecSelect, SetMarkdownContent } from './components/interactive.js';
 import { onProductFormSubmit, onAppFormSubmit, handleTLSCertificate } from './components/submit-form.js';
 import { fromSearch, fromButton } from './components/set-element-value.js';
 import { decoratePasswordReveal } from './components/decorate-password-reveal.js';
@@ -88,12 +88,11 @@ Interactive({
 	contentSelector: '.content-wrapper__content-api-docs'
 });
 
-InteractiveSelect({
-	stepsSelectorId: 'OasApiSelect',
-	contentsSelector: '.oas-display-content',
-	secondaryContentSelector: '.oas-display-content-download-button',
-});
-
+HandleApiSpecSelect({
+	selectorId: "OasApiSelect",
+	downloadSelectorId: "display-download-button",
+	displaySelectorId: "oas-display-stoplight"
+})
 /* Interactive */
 SelectMultiple({
 	selector: '.analytics-select-many-apps',

@@ -104,35 +104,42 @@ function isOAS(value) {
   return /^.*\.(json|yaml|yml)$/i.test(value);
 }
 
-export function InteractiveSelect({stepsSelectorId, contentsSelector, secondaryContentSelector}) {
-  let stepsSelector = document.getElementById(stepsSelectorId);
-  let contentSelector = document.querySelectorAll(contentsSelector);
-  let secondSelector = document.querySelectorAll(secondaryContentSelector);
-  if (stepsSelector && isOAS(stepsSelector.value)) {
-    Redoc.init(stepsSelector.value)
-  } 
-  contentSelector[0]?.classList.replace('d-none','d-block');
-  secondSelector[0]?.classList.replace('d-none','d-block');
-  const init = () => {
-    stepsSelector?.addEventListener('change', (e) => {
-      let value = e.target.value;
-      if (isOAS(value)) {
-        Redoc.init(value) 
-      }
-      contentSelector?.forEach(s => {
-        s.classList.replace('d-block', 'd-none');
-        let displaySection = "display-"+value;
-        document.getElementById(displaySection)?.classList.replace('d-none','d-block');
-      });
-      secondSelector?.forEach(s => {
-        s.classList.replace('d-block', 'd-none');
-        let displaySection = "display-download-button-"+value;
-        document.getElementById(displaySection)?.classList.replace('d-none','d-block');
-      });
-    });
-  };
+function isRedoc(value) {
+  return value === "product_doc_redoc"
+}
 
-  init();
+function handleContent(element, content) {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+  element.appendChild(content);
+}
+export function HandleApiSpecSelect({selectorId, downloadSelectorId, displaySelectorId}) {
+  let selector = document.getElementById(selectorId);
+  let downloadSelector = document.getElementById(downloadSelectorId);
+  let displaySelector = document.getElementById(displaySelectorId);
+  let oasTemplate = selector?.getAttribute("data-template");
+  let path = downloadSelector?.getAttribute("data-path");
+  let value = selector?.value.split("-");
+  let tmplIsRedoc = isRedoc(oasTemplate);
+  if (selector && isOAS(value[1]) &&  tmplIsRedoc) {
+    Redoc?.init(value[1])
+  } 
+
+  selector?.addEventListener('change', (e) => {
+    let value = e.target.value.split("-");
+    downloadSelector.action = `${path}/${value[0]}/docs/download`;
+    if (tmplIsRedoc && isOAS(value[1])) {
+      Redoc?.init(value[1]) 
+      return
+    }
+    let elementsApi = document.createElement('elements-api');
+    elementsApi.setAttribute('apiDescriptionUrl', value[1]);
+    elementsApi.setAttribute('router', 'hash');
+    elementsApi.setAttribute('layout', 'sidebar');
+    elementsApi.setAttribute('hideExport', 'true');
+    handleContent(displaySelector, elementsApi);
+  });
 }
 
 export function SetMarkdownContent(id) {

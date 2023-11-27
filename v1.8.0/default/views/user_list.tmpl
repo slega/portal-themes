@@ -56,9 +56,9 @@
                 {{ range $i, $userInvite := $userInvites }}
                   <tr>
                     <td>
-                      <a class="breadcrumb-link" href="users/{{ $userInvite.ID }}">{{ $userInvite.First }} {{ $userInvite.Last }}</a>
+                      <a class="breadcrumb-link private-portal-user-details" href="users/{{ $userInvite.ID }}">{{ $userInvite.First }} {{ $userInvite.Last }}</a>
                     </td>
-                    <td> {{ $userInvite.Email }} </td>
+                    <td class="private-portal-user-details"> {{ $userInvite.Email }} </td>
                     <td> {{ index $roles $userInvite.Role }} </td>
                     <td> {{ $userInvite.CreatedAt | date "2 Jan, 2006 15:04" }}</td>
                     {{ if $userInvite.Uactive }}
