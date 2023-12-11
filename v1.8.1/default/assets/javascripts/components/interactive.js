@@ -127,7 +127,7 @@ export function HandleApiSpecSelect({selectorId, downloadSelectorId, displaySele
   let displaySelector = document.getElementById(displaySelectorId);
   let oasTemplate = selector?.getAttribute("data-template");
   let path = downloadSelector?.getAttribute("data-path");
-  let [, ...docURL] = selector?.value.split("-");
+  let [, ...docURL] = selector && selector.value ? selector.value.split("-") : [];
   let tmplIsRedoc = isRedoc(oasTemplate);
   let url = getURLValue(docURL);
   if (selector && isOAS(url) &&  tmplIsRedoc) {
